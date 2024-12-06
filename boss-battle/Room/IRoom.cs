@@ -1,3 +1,4 @@
+namespace BossBattle.Core;
 
 public interface IRoom
 {

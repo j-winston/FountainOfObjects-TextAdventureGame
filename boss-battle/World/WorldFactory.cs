@@ -1,9 +1,9 @@
 // World Factory 
-using Room;
-
+namespace BossBattle.Core;
 
 public class WorldFactory
 {
+
     public static World GenerateWorld(int width, int height)
     {
         var grid = new IRoom[width, height];
@@ -13,8 +13,6 @@ public class WorldFactory
             for (int y = 0; y < height; y++)
             {
                 string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
-
-
 
                 grid[x, y] = RoomFactory.CreateRoom(roomType);
             }
@@ -33,8 +31,8 @@ public class WorldFactory
 
         Random random = new Random();
 
-        int fountainXPosition = random.Next(roomWidth, roomHeight);
-        int fountainYPosition = random.Next(roomWidth, roomHeight);
+        int fountainXPosition = random.Next(0, roomWidth - 1);
+        int fountainYPosition = random.Next(0, roomHeight - 1);
 
         grid[fountainXPosition, fountainYPosition] = RoomFactory.CreateRoom("fountain");
 

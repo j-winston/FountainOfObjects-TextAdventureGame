@@ -1,5 +1,5 @@
 // Room Factory 
-namespace Room;
+namespace BossBattle.Core;
 
 
 public class RoomFactory

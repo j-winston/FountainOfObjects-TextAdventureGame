@@ -1,5 +1,5 @@
 // Room
-
+namespace BossBattle.Core;
 
 public class NormalRoom : IRoom
 {

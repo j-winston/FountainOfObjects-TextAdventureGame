@@ -1,4 +1,4 @@
-namespace Player;
+namespace BossBattle.Core;
 
 public class Player
 {
