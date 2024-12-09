@@ -1,6 +1,8 @@
 // Game Engine 
 // Responsibilites: Orchestrating the whole thing
 //
+//
+using System;
 namespace BossBattle.Core;
 
 public class GameEngine
@@ -24,9 +26,9 @@ public class GameEngine
         {
             Render();
 
-            GetInput();
+            var input = GetInput();
 
-            ProcessInput();
+            ProcessInput(input);
 
             UpdateState();
 
@@ -36,26 +38,83 @@ public class GameEngine
 
     }
 
+    // Get current room and display on screen 
     public void Render()
     {
-
-        IRoom? currentRoom = _world?.GetRoomAt(_player.X, _player.Y);
-
-        if (currentRoom is not null)
+        if (_world is not null && _player is not null)
         {
-            Console.WriteLine(currentRoom?.Description);
+            IRoom? currentRoom = GetCurrentRoom();
+
+            if (currentRoom is not null)
+            {
+
+                //TODO: prettify the title of the room 
+                Console.WriteLine($"~~~{currentRoom?.RoomName}~~~\n");
+                Console.WriteLine(currentRoom?.Description);
+
+            }
+            else
+            {
+                Console.WriteLine("You've hit a wall");
+            }
+
+
         }
 
     }
 
-
-    public void GetInput()
+    public IRoom? GetCurrentRoom()
     {
+        if (_world is not null && _player is not null)
+        {
+            return _world.GetRoomAt(_player.X, _player.Y);
+        }
+
+        return null;
+    }
+
+    public string GetInput()
+    {
+        Console.WriteLine("What do you want to do?");
+
+        string? input = Console.ReadLine();
+
+        if (input is not null)
+        {
+            return input;
+        }
+
+        return String.Empty;
 
     }
 
-    public void ProcessInput()
+    public bool isValidCommand(string input)
     {
+        return input.Split(" ").GetLength(0) > 1;
+    }
+
+    // This can later be modified Maniac Mansion style 
+    public void ProcessInput(string input)
+    {
+
+        switch (input)
+        {
+            case "move west":
+                {
+                    // TODO: Start here check if movement is within bounds 
+                    _player?.MoveWest();
+                    break;
+
+                }
+            case "move east":
+                _player?.MoveEast();
+                break;
+
+
+            default: break;
+
+        }
+
 
     }
 

@@ -16,8 +16,16 @@ public class World
 
     public IRoom? GetRoomAt(int x, int y)
     {
+        if (x < Grid.GetLength(0) && y < Grid.GetLength(1))
+        {
+            return Grid[x, y];
+        }
+        else
+        {
+            return null;
 
-        return Grid[x, y] ?? null;
+        }
+
 
     }
 

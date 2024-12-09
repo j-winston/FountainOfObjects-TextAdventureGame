@@ -1,12 +1,12 @@
+/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.GeneratedMSBuildEditorConfig.editorconfig
+/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.AssemblyInfoInputs.cache
+/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.AssemblyInfo.cs
+/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.csproj.CoreCompileInputs.cache
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/bin/Debug/net8.0/boss-battle
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/bin/Debug/net8.0/boss-battle.deps.json
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/bin/Debug/net8.0/boss-battle.runtimeconfig.json
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/bin/Debug/net8.0/boss-battle.dll
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/bin/Debug/net8.0/boss-battle.pdb
-/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.GeneratedMSBuildEditorConfig.editorconfig
-/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.AssemblyInfoInputs.cache
-/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.AssemblyInfo.cs
-/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.csproj.CoreCompileInputs.cache
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.dll
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/refint/boss-battle.dll
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.pdb
