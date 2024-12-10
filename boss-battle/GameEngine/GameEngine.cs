@@ -1,9 +1,9 @@
 // Game Engine 
 // Responsibilites: Orchestrating the whole thing
-//
-//
-using System;
+using BossBattle.Utilities;
+
 namespace BossBattle.Core;
+
 
 public class GameEngine
 {
@@ -76,7 +76,6 @@ public class GameEngine
     public string GetInput()
     {
         Console.WriteLine("What do you want to do?");
-
         string? input = Console.ReadLine();
 
         if (input is not null)
@@ -88,7 +87,7 @@ public class GameEngine
 
     }
 
-    public bool isValidCommand(string input)
+    public bool IsValidCommand(string input)
     {
         return input.Split(" ").GetLength(0) > 1;
     }
@@ -96,36 +95,48 @@ public class GameEngine
     // This can later be modified Maniac Mansion style 
     public void ProcessInput(string input)
     {
-
-        switch (input)
+        if (IsValidCommand(input))
         {
-            case "move west":
-                {
-                    // TODO: Start here check if movement is within bounds 
-                    _player?.MoveWest();
-                    break;
+            Direction direction = ParseInputForDirection(input);
 
-                }
-            case "move east":
-                _player?.MoveEast();
-                break;
-
-
-            default: break;
+            if (RoomDoesExist(direction))
+            {
+                _player?.Move(direction);
+            }
 
         }
-
-
     }
+
+    public bool RoomDoesExist(Direction direction)
+    {
+        return _world.DoesRoomExist(direction);
+    }
+
+
+    public Direction ParseInputForDirection(string input)
+    {
+        return input.ToLowerInvariant() switch
+        {
+            "move north" or "north" or "n" => Direction.North,
+            "move south" or "south" or "s" => Direction.South,
+            "move east" or "east" or "e" => Direction.East,
+            "move west" or "west" or "w" => Direction.West,
+            _ => throw new ArgumentException("unknown")
+        };
+    }
+
+
+
 
     public void UpdateState()
     {
 
     }
 
-
-
-
 }
+
+
+
+
 
 
