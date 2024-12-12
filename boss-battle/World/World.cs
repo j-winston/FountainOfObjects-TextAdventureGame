@@ -17,17 +17,22 @@ public class World
 
     public IRoom? GetRoomAt(int x, int y)
     {
-        if (x < Grid.GetLength(0) && y < Grid.GetLength(1))
+        // If room exists, return it
+        if (DoesRoomExist(x, y))
         {
             return Grid[x, y];
         }
+
         else
         {
             return null;
-
         }
 
+    }
 
+    public bool DoesRoomExist(int x, int y)
+    {
+        return (x < Grid.GetLength(0) && y < Grid.GetLength(1));
     }
 
 

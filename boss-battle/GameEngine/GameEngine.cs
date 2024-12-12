@@ -4,7 +4,6 @@ using BossBattle.Utilities;
 
 namespace BossBattle.Core;
 
-
 public class GameEngine
 {
     private World? _world;
@@ -32,34 +31,19 @@ public class GameEngine
 
             UpdateState();
 
-
         }
 
 
     }
 
-    // Get current room and display on screen 
     public void Render()
     {
-        if (_world is not null && _player is not null)
-        {
-            IRoom? currentRoom = GetCurrentRoom();
+        var currentRoom = _world.GetRoomAt(_player.X, _player.Y);
 
-            if (currentRoom is not null)
-            {
+        Console.WriteLine($"\nYou are in the room at y={_player.Y}, x={_player.X}");
+        Console.WriteLine($"~~~{currentRoom?.RoomName}~~~\n");
+        Console.WriteLine(currentRoom?.Description);
 
-                //TODO: prettify the title of the room 
-                Console.WriteLine($"~~~{currentRoom?.RoomName}~~~\n");
-                Console.WriteLine(currentRoom?.Description);
-
-            }
-            else
-            {
-                Console.WriteLine("You've hit a wall");
-            }
-
-
-        }
 
     }
 
@@ -87,31 +71,20 @@ public class GameEngine
 
     }
 
-    public bool IsValidCommand(string input)
-    {
-        return input.Split(" ").GetLength(0) > 1;
-    }
 
-    // This can later be modified Maniac Mansion style 
     public void ProcessInput(string input)
     {
-        if (IsValidCommand(input))
-        {
-            Direction direction = ParseInputForDirection(input);
+        Direction direction = ParseInputForDirection(input);
 
-            if (RoomDoesExist(direction))
+        var nextPositionCoordinates = GetNextPosition(direction);
+
+        if (nextPositionCoordinates.y >= 0 && nextPositionCoordinates.x >= 0)
+
+            if (_world.DoesRoomExist(nextPositionCoordinates.y, nextPositionCoordinates.x))
             {
                 _player?.Move(direction);
             }
-
-        }
     }
-
-    public bool RoomDoesExist(Direction direction)
-    {
-        return _world.DoesRoomExist(direction);
-    }
-
 
     public Direction ParseInputForDirection(string input)
     {
@@ -126,7 +99,22 @@ public class GameEngine
     }
 
 
+    public (int y, int x) GetNextPosition(Direction direction)
+    {
+        // Get current position 
+        int y = _player.Y;
+        int x = _player.X;
 
+        // Return coordinates of target position
+        return direction switch
+        {
+            Direction.North => (y++, x),
+            Direction.South => (y--, x),
+            Direction.East => (y, x++),
+            Direction.West => (y, x--),
+            _ => throw new ArgumentException("unknown")
+        };
+    }
 
     public void UpdateState()
     {
