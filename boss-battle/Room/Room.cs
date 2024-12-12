@@ -16,7 +16,9 @@ public class HazardRoom : IRoom
 
 public class FountainRoom : IRoom
 {
-    public string Description => "The Fountain is in this room!";
+    // Later, each room could have sets of objects with interaction triggers
+    public string Description => "You hear water dripping in this room. The Fountain of Objects is here!";
+    public string FountainEnabledMessage => "You hear rushing waters from the Fountain of Objects. It has been reactivated!";
     public string RoomName => "Fountain Room";
 }
 
