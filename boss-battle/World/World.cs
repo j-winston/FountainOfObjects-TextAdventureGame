@@ -17,7 +17,6 @@ public class World
 
     public IRoom? GetRoomAt(int x, int y)
     {
-        // If room exists, return it
         if (DoesRoomExist(x, y))
         {
             return Grid[x, y];

@@ -8,9 +8,10 @@ public class RoomFactory
     {
         return roomType switch
         {
-            "normal" => new NormalRoom(),
-            "hazard" => new HazardRoom(),
-            "fountain" => new FountainRoom(),
+            "normal" => new NormalRoom("A Normal Room"),
+            "hazard" => new HazardRoom("Hazardous Room"),
+            "fountain" => new FountainRoom("The Fountain Room"),
+            "entrance" => new EntranceRoom("The Cavern Entrance"),
             _ => throw new ArgumentException("Unknown room type")
         };
 

@@ -4,19 +4,25 @@ using BossBattle.Utilities;
 
 namespace BossBattle.Core;
 
-public class GameEngine
+public class GameEngine : IRoomObserver
 {
-    private World? _world;
-    private Player? _player;
+    private readonly World _world;
+    private readonly Player _player;
     private bool _isRunning;
+    private bool _fountainFound;
 
 
     public void Initialize()
     {
-        _world = WorldFactory.GenerateWorld(5, 5);
-        _player = new Player();
         _isRunning = true;
+        Console.WriteLine("Game started.");
+    }
 
+    public GameEngine()
+    {
+        _world = WorldFactory.GenerateWorld(5, 5, this);
+        _player = new Player();
+        _isRunning = false;
     }
 
     public void Run()
@@ -40,11 +46,9 @@ public class GameEngine
     {
         var currentRoom = _world.GetRoomAt(_player.X, _player.Y);
 
-        Console.WriteLine($"\nYou are in the room at y={_player.Y}, x={_player.X}");
-        Console.WriteLine($"~~~{currentRoom?.RoomName}~~~\n");
-        Console.WriteLine(currentRoom?.Description);
-
-
+        if (currentRoom is not null)
+        {
+        }
     }
 
     public IRoom? GetCurrentRoom()
@@ -83,6 +87,7 @@ public class GameEngine
             if (_world.DoesRoomExist(nextPositionCoordinates.y, nextPositionCoordinates.x))
             {
                 _player?.Move(direction);
+
             }
     }
 
@@ -119,6 +124,28 @@ public class GameEngine
     public void UpdateState()
     {
 
+    }
+
+    public void OnPlayerEnter(IRoom room)
+    {
+        // Interactions etc. 
+        // Check fountain trigger
+
+        if (room.Name == "The Fountain Room")
+        {
+            _fountainFound = true;
+
+        }
+
+        if (room.Name == "The Cavern Entrance ")
+        {
+            if (_fountainFound)
+            {
+                Console.WriteLine("The Fountain of Objects has been reactivated, and you have escaped with your life!");
+
+                _isRunning = false;
+            }
+        }
     }
 
 }

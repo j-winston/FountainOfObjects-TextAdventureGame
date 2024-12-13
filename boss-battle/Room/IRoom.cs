@@ -1,11 +1,15 @@
+using BossBattle.Utilities;
+
 namespace BossBattle.Core;
 
 public interface IRoom
 {
-    string? Description { get; }
-    string? RoomName { get; }
+    string? Name { get; }
+
+    void AddObserver(IRoomObserver observer);
+    void PlayerEntered();
+
 
 }
-
 
 

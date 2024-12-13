@@ -1,10 +1,12 @@
 // World Factory 
 namespace BossBattle.Core;
 
+using BossBattle.Utilities;
+
 public class WorldFactory
 {
 
-    public static World GenerateWorld(int width, int height)
+    public static World GenerateWorld(int width, int height, IRoomObserver gameEngineObserver)
     {
         var grid = new IRoom[width, height];
 
@@ -15,16 +17,26 @@ public class WorldFactory
                 string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
 
                 grid[x, y] = RoomFactory.CreateRoom(roomType);
+
+                grid[x, y].AddObserver(gameEngineObserver);
             }
         }
 
         CreateFountainRoom(grid);
+
+        SetEntranceRoom(grid);
 
         return new World(grid);
 
     }
 
     private static void CreateFountainRoom(IRoom[,] grid)
+    {
+        grid[0, 2] = RoomFactory.CreateRoom("fountain");
+
+    }
+
+    private static void PositionFountainRandomly(IRoom[,] grid)
     {
         int roomWidth = grid.GetLength(0);
         int roomHeight = grid.GetLength(1);
@@ -37,6 +49,16 @@ public class WorldFactory
         grid[fountainXPosition, fountainYPosition] = RoomFactory.CreateRoom("fountain");
 
     }
+
+    private static void SetEntranceRoom(IRoom[,] grid)
+    {
+        grid[0, 0] = RoomFactory.CreateRoom("entrance");
+
+    }
+
+
+
+
 
 
 }
