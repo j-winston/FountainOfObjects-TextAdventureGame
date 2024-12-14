@@ -8,8 +8,12 @@ public class GameEngine : IRoomObserver
 {
     private readonly World _world;
     private readonly Player _player;
+    private IRoom _currentRoom;
+
+    private GameDisplay _display;
+
     private bool _isRunning;
-    private bool _fountainFound;
+    private bool _fountainEnabled;
 
 
     public void Initialize()
@@ -21,8 +25,12 @@ public class GameEngine : IRoomObserver
     public GameEngine()
     {
         _world = WorldFactory.GenerateWorld(5, 5, this);
+        _currentRoom = _world.GetEntranceRoom();
+        _display = new GameDisplay();
+
         _player = new Player();
         _isRunning = false;
+        _fountainEnabled = false;
     }
 
     public void Run()
@@ -44,26 +52,14 @@ public class GameEngine : IRoomObserver
 
     public void Render()
     {
-        var currentRoom = _world.GetRoomAt(_player.X, _player.Y);
+        _currentRoom.PlayerEntered();
 
-        if (currentRoom is not null)
-        {
-        }
     }
 
-    public IRoom? GetCurrentRoom()
-    {
-        if (_world is not null && _player is not null)
-        {
-            return _world.GetRoomAt(_player.X, _player.Y);
-        }
-
-        return null;
-    }
 
     public string GetInput()
     {
-        Console.WriteLine("What do you want to do?");
+        _display.WriteNarrative("What do you want to do?");
         string? input = Console.ReadLine();
 
         if (input is not null)
@@ -78,17 +74,22 @@ public class GameEngine : IRoomObserver
 
     public void ProcessInput(string input)
     {
+        if (input == "quit")
+            return;
+
         Direction direction = ParseInputForDirection(input);
 
         var nextPositionCoordinates = GetNextPosition(direction);
 
         if (nextPositionCoordinates.y >= 0 && nextPositionCoordinates.x >= 0)
-
+        {
             if (_world.DoesRoomExist(nextPositionCoordinates.y, nextPositionCoordinates.x))
             {
                 _player?.Move(direction);
 
             }
+
+        }
     }
 
     public Direction ParseInputForDirection(string input)
@@ -113,35 +114,51 @@ public class GameEngine : IRoomObserver
         // Return coordinates of target position
         return direction switch
         {
-            Direction.North => (y++, x),
-            Direction.South => (y--, x),
-            Direction.East => (y, x++),
-            Direction.West => (y, x--),
+            Direction.North => (++y, x),
+            Direction.South => (--y, x),
+            Direction.East => (y, ++x),
+            Direction.West => (y, --x),
             _ => throw new ArgumentException("unknown")
         };
     }
 
     public void UpdateState()
     {
+        if (_isRunning)
+        {
+            var room = _world.GetRoomAt(_player.Y, _player.X);
 
+            if (room is not null)
+                _currentRoom = room;
+        }
     }
 
+    // Managed by RoomObservers
     public void OnPlayerEnter(IRoom room)
     {
-        // Interactions etc. 
-        // Check fountain trigger
-
         if (room.Name == "The Fountain Room")
         {
-            _fountainFound = true;
+            Console.WriteLine("Type enable fountain to activate fountain");
+            string? input = Console.ReadLine();
 
+            if (input is null)
+            {
+                input = "";
+            }
+
+            if (input == "enable fountain")
+            {
+                Console.WriteLine("You've enabled the fountain!");
+                _fountainEnabled = true;
+            }
         }
 
-        if (room.Name == "The Cavern Entrance ")
+        if (room.Name == "The Cavern Entrance")
         {
-            if (_fountainFound)
+            if (_fountainEnabled)
             {
                 Console.WriteLine("The Fountain of Objects has been reactivated, and you have escaped with your life!");
+                Console.WriteLine("You win!");
 
                 _isRunning = false;
             }

@@ -19,10 +19,12 @@ public class Player
                 X++;
                 break;
             case Direction.South:
-                Y--;
+                if (Y >= 0)
+                    Y--;
                 break;
             case Direction.West:
-                X--;
+                if (X >= 0)
+                    X--;
                 break;
         }
 
