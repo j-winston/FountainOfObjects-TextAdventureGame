@@ -65,6 +65,7 @@ public class FountainRoom : IRoom
     private readonly GameDisplay _roomDisplay;
 
     public string Name { get; }
+    public bool FountainEnabled { get; set; }
 
     public FountainRoom(string name, GameDisplay display)
     {
@@ -79,6 +80,9 @@ public class FountainRoom : IRoom
 
     public void PlayerEntered()
     {
+        if (FountainEnabled)
+            _roomDisplay.WriteFountainMessage("You now feel the power of the Fountain of Objects resonating through you.");
+
         _roomDisplay.WriteFountainMessage("You hear water dripping in this room. The Fountain of Objects is here!");
         _roomObservers.NotifyObservers(this);
     }

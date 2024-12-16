@@ -44,16 +44,14 @@ public class GameEngine : IRoomObserver
     {
         while (_isRunning)
         {
-            Render();
+            Render(_currentRoom);
 
             var input = GetInput();
 
             ProcessInput(input);
 
             UpdateState();
-
         }
-
 
     }
 
@@ -68,28 +66,49 @@ public class GameEngine : IRoomObserver
 
         if (menuChoice is not null)
         {
-            _worldSize = GetWorldSize(menuChoice);
+            SetWorldSize(GetWorldSize(menuChoice));
         }
 
         else
         {
             Console.Clear();
-            Console.WriteLine("Invalid option.");
+            Console.WriteLine("I don't understand.");
         }
 
     }
 
 
-    WorldSize GetWorldSize(string menuChoice) => menuChoice switch
+    WorldSize GetWorldSize(string menuChoice)
     {
-        "1" => WorldSize.Small,
-        "2" => WorldSize.Medium,
-        "3" => WorldSize.Large
+        switch (menuChoice)
+        {
+            case "0":
+                return WorldSize.Small;
 
-    };
+            case "1":
+                return WorldSize.Medium;
 
-    public void Render()
+            case "2":
+                return WorldSize.Large;
+
+            default:
+                Console.WriteLine("Setting to default map size(4x4)");
+                return WorldSize.Small;
+        }
+
+    }
+
+    private void SetWorldSize(WorldSize size)
     {
+        _worldSize = size;
+    }
+
+
+    public void Render(IRoom room)
+    {
+        Console.WriteLine();
+        DisplayRoomName(room);
+
         _currentRoom.PlayerEntered();
 
     }
@@ -98,37 +117,43 @@ public class GameEngine : IRoomObserver
     public string GetInput()
     {
         _display.WriteNarrative("What do you want to do?");
+        _display.ChangeInputColor(MessageTypes.UserCommand);
         string? input = Console.ReadLine();
 
         if (input is not null)
-        {
             return input;
-        }
 
         return String.Empty;
 
     }
 
-
     public void ProcessInput(string input)
     {
-        if (input == "quit")
-            return;
-
-        Direction direction = ParseInputForDirection(input);
-
-        var nextPositionCoordinates = GetNextPosition(direction);
-
-        if (nextPositionCoordinates.y >= 0 && nextPositionCoordinates.x >= 0)
+        // If user enters q, quit
+        if (input == "q")
         {
-            if (_world.DoesRoomExist(nextPositionCoordinates.y, nextPositionCoordinates.x))
-            {
-                _player?.Move(direction);
-
-            }
-
+            _isRunning = false;
+            return;
         }
+
+        // If can't make sense of input, do nothing 
+        Direction direction = ParseInputForDirection(input);
+        if (direction == Direction.Unknown)
+        {
+            Console.WriteLine("Unknown direction. Staying put.");
+        }
+
+        // Otherwise move to target location if it exists
+        else
+        {
+            var targetPosition = GetTargetPosition(direction);
+            if (RoomExistsAtCoordinates(targetPosition.x, targetPosition.y))
+                _player?.Move(direction);
+        }
+
     }
+
+
 
     public Direction ParseInputForDirection(string input)
     {
@@ -138,12 +163,12 @@ public class GameEngine : IRoomObserver
             "move south" or "south" or "s" => Direction.South,
             "move east" or "east" or "e" => Direction.East,
             "move west" or "west" or "w" => Direction.West,
-            _ => throw new ArgumentException("unknown")
+            _ => Direction.Unknown
         };
     }
 
 
-    public (int y, int x) GetNextPosition(Direction direction)
+    public (int y, int x) GetTargetPosition(Direction direction)
     {
         // Get current position 
         int y = _player.Y;
@@ -160,6 +185,18 @@ public class GameEngine : IRoomObserver
         };
     }
 
+    private bool RoomExistsAtCoordinates(int x, int y)
+    {
+
+        if (ValidCoordinates(x, y))
+            if (_world.DoesRoomExist(x, y))
+                return true;
+        return false;
+
+    }
+
+    private bool ValidCoordinates(int x, int y) => (x >= 0 && y >= 0);
+
     public void UpdateState()
     {
         if (_isRunning)
@@ -174,35 +211,55 @@ public class GameEngine : IRoomObserver
     // Managed by RoomObservers
     public void OnPlayerEnter(IRoom room)
     {
-        if (room.Name == "The Fountain Room")
+
+        switch (room.GetType().Name)
         {
-            Console.WriteLine("Type enable fountain to activate fountain");
-            string? input = Console.ReadLine();
+            case "FountainRoom":
+                {
+                    if (!_fountainEnabled)
+                    {
+                        _display.WriteFountainMessage("Type enable fountain to activate fountain");
+                        _display.ChangeInputColor(MessageTypes.UserCommand);
 
-            if (input is null)
-            {
-                input = "";
-            }
+                        string? input = Console.ReadLine();
 
-            if (input == "enable fountain")
-            {
-                Console.WriteLine("You've enabled the fountain!");
-                _fountainEnabled = true;
-            }
-        }
+                        if (input is null)
+                            input = "";
 
-        if (room.Name == "The Cavern Entrance")
-        {
-            if (_fountainEnabled)
-            {
-                Console.WriteLine("The Fountain of Objects has been reactivated, and you have escaped with your life!");
-                Console.WriteLine("You win!");
+                        if (input == "enable fountain")
+                        {
+                            EnableFountain((FountainRoom)room);
+                            _display.WriteFountainMessage("You've enabled the fountain!");
+                            _display.WriteFountainMessage("Now get back to the entrance to escape.");
+                        }
+                    }
+                }
+                break;
 
-                _isRunning = false;
-            }
+            case "EntranceRoom":
+                {
+                    if (_fountainEnabled)
+                    {
+                        _display.WriteEntranceMessage("The Fountain of Objects has been reactivated, and you have escaped with your life!");
+                        _display.WriteEntranceMessage("Type 'q' to quit or wander around more if you like.");
+                        _isRunning = false;
+                    }
+                }
+                break;
+
         }
     }
 
+    private void DisplayRoomName(IRoom room)
+    {
+        _display.WriteRoomName($"======== {room.Name} ========");
+    }
+    private void EnableFountain(FountainRoom fountainRoom)
+    {
+        fountainRoom.FountainEnabled = true;
+        _fountainEnabled = true;
+
+    }
 }
 
 

@@ -17,20 +17,33 @@ public class WorldFactory
         {
             for (int y = 0; y < height; y++)
             {
-                string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
+                // Generate Entrance Room at 0,0
+                if (x == 0 && y == 0)
+                {
+                    grid[x, y] = RoomFactory.CreateRoom("entrance", consoleDisplay);
+                }
 
-                grid[x, y] = RoomFactory.CreateRoom(roomType, consoleDisplay);
+                // Generate Cavern Rooms 
+                else
+                {
+                    string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
+                    grid[x, y] = RoomFactory.CreateRoom(roomType, consoleDisplay);
+                }
+
+                // Pass an observer and text display to each generated room
                 grid[x, y].AddObserver(gameEngineObserver);
             }
-
-            // Special Rooms
-            grid[0, 0] = RoomFactory.CreateRoom("entrance", consoleDisplay);
-            grid[0, 0].AddObserver(gameEngineObserver);
-
-            grid[0, 2] = RoomFactory.CreateRoom("fountain", consoleDisplay);
-            grid[0, 2].AddObserver(gameEngineObserver);
-
         }
+
+        // Create the Fountain Room in a random location and pass in observer 
+        (int xPos, int yPos) = GetRandomCoordinate(grid.GetLength(0), grid.GetLength(1));
+
+        // If the coordinates are 0,0(entrance) get another set
+        if (xPos == 0 && yPos == 0)
+            (xPos, yPos) = GetRandomCoordinate(grid.GetLength(0), grid.GetLength(1));
+
+        grid[xPos, yPos] = RoomFactory.CreateRoom("fountain", consoleDisplay);
+        grid[xPos, yPos].AddObserver(gameEngineObserver);
 
         return new World(grid);
 
@@ -43,6 +56,7 @@ public class WorldFactory
             WorldSize.Small => (4, 4),
             WorldSize.Medium => (6, 6),
             WorldSize.Large => (8, 8),
+            _ => (4, 4)
 
         };
     }
@@ -54,18 +68,15 @@ public class WorldFactory
 
     }
 
-    // Only for random positioning option
-    private static void PositionFountainRandomly(IRoom[,] grid, GameDisplay consoleDisplay)
+    private static (int x, int y) GetRandomCoordinate(int width, int height)
     {
-        int roomWidth = grid.GetLength(0);
-        int roomHeight = grid.GetLength(1);
 
         Random random = new Random();
 
-        int fountainXPosition = random.Next(0, roomWidth - 1);
-        int fountainYPosition = random.Next(0, roomHeight - 1);
+        int randomX = random.Next(0, width - 1);
+        int randomY = random.Next(0, height - 1);
 
-        grid[fountainXPosition, fountainYPosition] = RoomFactory.CreateRoom("fountain", consoleDisplay);
+        return (randomX, randomY);
 
     }
 

@@ -16,7 +16,8 @@ public class GameDisplay
          {MessageTypes.Input , ConsoleColor.Cyan},
          {MessageTypes.Entrance ,ConsoleColor.Yellow},
          {MessageTypes.Fountain , ConsoleColor.Blue},
-         {MessageTypes.RoomName , ConsoleColor.Green}
+         {MessageTypes.RoomName , ConsoleColor.Red},
+         {MessageTypes.UserCommand, ConsoleColor.Green}
 
         };
     }
@@ -24,6 +25,11 @@ public class GameDisplay
     public void WriteNarrative(string message)
     {
         WriteMessage(message, MessageTypes.Narrative);
+    }
+
+    public void WriteUserCommand(string message)
+    {
+        WriteMessage(message, MessageTypes.UserCommand);
     }
 
     public void WriteRoomName(string message)
@@ -77,6 +83,7 @@ public enum MessageTypes
     Descriptive,
     RoomName,
     MenuNumberOption,
-    Entrance
+    Entrance,
+    UserCommand
 };
 
