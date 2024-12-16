@@ -22,35 +22,17 @@ public class GameDisplay
         };
     }
 
-    public void WriteNarrative(string message)
-    {
-        WriteMessage(message, MessageTypes.Narrative);
-    }
+    public void WriteNarrative(string message) => WriteMessage(message, MessageTypes.Narrative);
 
-    public void WriteUserCommand(string message)
-    {
-        WriteMessage(message, MessageTypes.UserCommand);
-    }
+    public void WriteUserCommand(string message) => WriteMessage(message, MessageTypes.UserCommand);
 
-    public void WriteRoomName(string message)
-    {
-        WriteMessage(message, MessageTypes.RoomName);
-    }
+    public void WriteRoomName(string message) => WriteMessage(message, MessageTypes.RoomName);
 
-    public void WriteDescription(string message)
-    {
-        WriteMessage(message, MessageTypes.Descriptive);
-    }
+    public void WriteDescription(string message) => WriteMessage(message, MessageTypes.Descriptive);
 
-    public void WriteFountainMessage(string message)
-    {
-        WriteMessage(message, MessageTypes.Fountain);
-    }
+    public void WriteFountainMessage(string message) => WriteMessage(message, MessageTypes.Fountain);
 
-    public void WriteEntranceMessage(string message)
-    {
-        WriteMessage(message, MessageTypes.Entrance);
-    }
+    public void WriteEntranceMessage(string message) => WriteMessage(message, MessageTypes.Entrance);
 
     public void ChangeInputColor(MessageTypes messageType)
     {
@@ -59,7 +41,6 @@ public class GameDisplay
             Console.ForegroundColor = color;
         }
     }
-
 
     private void WriteMessage(string message, MessageTypes messageType)
     {
@@ -70,7 +51,6 @@ public class GameDisplay
 
         Console.WriteLine(message);
     }
-
 
 }
 
