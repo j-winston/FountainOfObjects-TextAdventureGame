@@ -6,8 +6,10 @@ using BossBattle.Utilities;
 public class WorldFactory
 {
 
-    public static World GenerateWorld(int width, int height, IRoomObserver gameEngineObserver)
+    public static World GenerateWorld(WorldSize worldSize, IRoomObserver gameEngineObserver)
     {
+        (int width, int height) = GetDimensions(worldSize);
+
         var grid = new IRoom[width, height];
         GameDisplay consoleDisplay = new GameDisplay();
 
@@ -32,6 +34,17 @@ public class WorldFactory
 
         return new World(grid);
 
+    }
+
+    private static (int width, int height) GetDimensions(WorldSize size)
+    {
+        return size switch
+        {
+            WorldSize.Small => (4, 4),
+            WorldSize.Medium => (6, 6),
+            WorldSize.Large => (8, 8),
+
+        };
     }
 
 

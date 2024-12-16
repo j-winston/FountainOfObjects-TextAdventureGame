@@ -55,7 +55,7 @@ public class GameDisplay
     }
 
 
-    public void WriteMessage(string message, MessageTypes messageType)
+    private void WriteMessage(string message, MessageTypes messageType)
     {
         if (_messageColors.TryGetValue(messageType, out var color))
         {
@@ -76,6 +76,7 @@ public enum MessageTypes
     Fountain,
     Descriptive,
     RoomName,
+    MenuNumberOption,
     Entrance
 };
 

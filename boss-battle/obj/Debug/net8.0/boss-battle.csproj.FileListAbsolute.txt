@@ -12,3 +12,4 @@
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.pdb
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.genruntimeconfig.cache
 /home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/ref/boss-battle.dll
+/home/james/Documents/Code/players-guide/fountain-objects-level-31/boss-battle/obj/Debug/net8.0/boss-battle.sourcelink.json

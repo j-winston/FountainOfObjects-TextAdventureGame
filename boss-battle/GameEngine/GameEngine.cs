@@ -9,6 +9,7 @@ public class GameEngine : IRoomObserver
     private readonly World _world;
     private readonly Player _player;
     private IRoom _currentRoom;
+    private WorldSize _worldSize = WorldSize.Small;
 
     private GameDisplay _display;
 
@@ -19,18 +20,24 @@ public class GameEngine : IRoomObserver
     public void Initialize()
     {
         _isRunning = true;
+
+        Console.Clear();
         Console.WriteLine("Game started.");
+
     }
 
     public GameEngine()
     {
-        _world = WorldFactory.GenerateWorld(5, 5, this);
-        _currentRoom = _world.GetEntranceRoom();
         _display = new GameDisplay();
-
         _player = new Player();
         _isRunning = false;
         _fountainEnabled = false;
+
+        SelectSizeMenu();
+
+        _world = WorldFactory.GenerateWorld(_worldSize, this);
+        _currentRoom = _world.GetEntranceRoom();
+
     }
 
     public void Run()
@@ -49,6 +56,37 @@ public class GameEngine : IRoomObserver
 
 
     }
+
+    public void SelectSizeMenu()
+    {
+        Console.WriteLine("\nChoose a Map Size: ");
+        Console.WriteLine("1. Small (4x4)");
+        Console.WriteLine("2. Medium (6x6)");
+        Console.WriteLine("3. Large (4x4)");
+
+        var menuChoice = Console.ReadLine();
+
+        if (menuChoice is not null)
+        {
+            _worldSize = GetWorldSize(menuChoice);
+        }
+
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("Invalid option.");
+        }
+
+    }
+
+
+    WorldSize GetWorldSize(string menuChoice) => menuChoice switch
+    {
+        "1" => WorldSize.Small,
+        "2" => WorldSize.Medium,
+        "3" => WorldSize.Large
+
+    };
 
     public void Render()
     {
