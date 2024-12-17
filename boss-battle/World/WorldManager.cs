@@ -1,6 +1,6 @@
 // WorldManager:  
 // Responsibilities: Manages room state and provides interfaces to GameEngine for room queries  
-
+using System.Collections.Generic;
 using BossBattle.Utilities;
 
 namespace BossBattle.Core;
@@ -34,6 +34,26 @@ public class WorldManager
         return false;
     }
 
+    public bool DoesRoomContainPit(int x, int y)
+    {
+        if (DoesRoomExist(x, y))
+            return _world.Grid[x, y].HasPit;
+        return false;
+    }
+
+    public bool IsAdjacentToPit(int x, int y)
+    {
+        var rooms = GetAdjacentRooms(x, y);
+
+        foreach (var room in rooms)
+        {
+            if (room.HasPit == true)
+                return true;
+        }
+
+        return false;
+    }
+
     public EntranceRoom GetEntranceRoom()
     {
         return (EntranceRoom)_world.Grid[0, 0];
@@ -49,6 +69,43 @@ public class WorldManager
             _ => (4, 4)
 
         };
+    }
+
+    public List<IRoom> GetAdjacentRooms(int roomX, int roomY)
+    {
+        List<IRoom> adjacentRooms = new List<IRoom>();
+
+        if (roomX == 0 & roomY == 0)
+        {
+            // Orthogonal from 0,0
+            adjacentRooms.Add(_world.Grid[roomX + 1, roomY]);
+            adjacentRooms.Add(_world.Grid[roomX, roomY + 1]);
+
+            // Diagonal from 0,0 
+            adjacentRooms.Add(_world.Grid[roomX, roomY + 1]);
+        }
+        else
+        {
+            // Orthogonal 
+            adjacentRooms.Add(_world.Grid[roomX - 1, roomY]);
+            adjacentRooms.Add(_world.Grid[roomX + 1, roomY]);
+            adjacentRooms.Add(_world.Grid[roomX, roomY - 1]);
+            adjacentRooms.Add(_world.Grid[roomX, roomY + 1]);
+
+            // Diagonal 
+            adjacentRooms.Add(_world.Grid[roomX - 1, roomY - 1]);
+            adjacentRooms.Add(_world.Grid[roomX + 1, roomY + 1]);
+            adjacentRooms.Add(_world.Grid[roomX - 1, roomY + 1]);
+            adjacentRooms.Add(_world.Grid[roomX + 1, roomY - 1]);
+        }
+
+        return adjacentRooms;
+
+
+
+
+
+
     }
 
 
