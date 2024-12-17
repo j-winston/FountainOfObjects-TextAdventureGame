@@ -10,6 +10,7 @@ public class NormalRoom : IRoom
     private readonly GameDisplay _roomDisplay;
 
     public string Name { get; }
+    public bool HasPit { get; set; } = false;
 
     public NormalRoom(string name, GameDisplay display)
     {
@@ -38,6 +39,7 @@ public class HazardRoom : IRoom
     private readonly RoomObservers _roomObservers = new();
     private readonly GameDisplay _roomDisplay = new();
     public string Name { get; }
+    public bool HasPit { get; set; } = false;
 
     public HazardRoom(string name, GameDisplay display)
     {
@@ -66,6 +68,7 @@ public class FountainRoom : IRoom
 
     public string Name { get; }
     public bool FountainEnabled { get; set; }
+    public bool HasPit { get; set; } = false;
 
     public FountainRoom(string name, GameDisplay display)
     {
@@ -94,6 +97,7 @@ public class EntranceRoom : IRoom
 {
     private readonly RoomObservers _roomObservers = new();
     private readonly GameDisplay _roomDisplay;
+    public bool HasPit { get; set; }
 
     public string Name { get; }
 

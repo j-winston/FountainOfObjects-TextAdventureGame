@@ -12,6 +12,7 @@ public class GameEngine : IRoomObserver
     private WorldSize _worldSize = WorldSize.Small;
 
     private GameDisplay _display;
+    private WorldManager _worldManager;
 
     private bool _isRunning;
     private bool _fountainEnabled;
@@ -20,6 +21,7 @@ public class GameEngine : IRoomObserver
     public void Initialize()
     {
         _isRunning = true;
+        _fountainEnabled = false;
 
         Console.Clear();
         Console.WriteLine("Game started.");
@@ -28,15 +30,14 @@ public class GameEngine : IRoomObserver
 
     public GameEngine()
     {
-        _display = new GameDisplay();
         _player = new Player();
-        _isRunning = false;
-        _fountainEnabled = false;
+        _display = new GameDisplay();
+        _world = WorldFactory.GenerateWorld(_worldSize, this);
+        _worldManager = new WorldManager(_world);
 
         SelectSizeMenu();
 
-        _world = WorldFactory.GenerateWorld(_worldSize, this);
-        _currentRoom = _world.GetEntranceRoom();
+        _currentRoom = _worldManager.GetEntranceRoom();
 
     }
 
@@ -189,7 +190,7 @@ public class GameEngine : IRoomObserver
     {
 
         if (ValidCoordinates(x, y))
-            if (_world.DoesRoomExist(x, y))
+            if (_worldManager.DoesRoomExist(x, y))
                 return true;
         return false;
 
@@ -201,7 +202,7 @@ public class GameEngine : IRoomObserver
     {
         if (_isRunning)
         {
-            var room = _world.GetRoomAt(_player.Y, _player.X);
+            var room = _worldManager.GetRoomAt(_player.Y, _player.X);
 
             if (room is not null)
                 _currentRoom = room;
