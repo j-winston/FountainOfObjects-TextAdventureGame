@@ -9,7 +9,7 @@ public class GameEngine : IRoomObserver
     private readonly World _world;
     private readonly Player _player;
     private IRoom _currentRoom;
-    private WorldSize _worldSize = WorldSize.Small;
+    private WorldSize _worldSize;
 
     private GameDisplay _display;
     private WorldManager _worldManager;
@@ -32,10 +32,11 @@ public class GameEngine : IRoomObserver
     {
         _player = new Player();
         _display = new GameDisplay();
+
+        _worldSize = GetMapSizeChoice();
+
         _world = WorldFactory.GenerateWorld(_worldSize, this);
         _worldManager = new WorldManager(_world);
-
-        SelectSizeMenu();
 
         _currentRoom = _worldManager.GetEntranceRoom();
 
@@ -53,63 +54,63 @@ public class GameEngine : IRoomObserver
 
             UpdateState();
         }
-
     }
 
-    public void SelectSizeMenu()
+    public WorldSize GetMapSizeChoice()
     {
         Console.WriteLine("\nChoose a Map Size: ");
         Console.WriteLine("1. Small (4x4)");
         Console.WriteLine("2. Medium (6x6)");
-        Console.WriteLine("3. Large (4x4)");
+        Console.WriteLine("3. Large (8x8)");
 
-        var menuChoice = Console.ReadLine();
+        var input = Console.ReadLine();
 
-        if (menuChoice is not null)
+        if (int.TryParse(input, out int menuItem))
         {
-            SetWorldSize(GetWorldSize(menuChoice));
+            return menuItem switch
+            {
+                1 => WorldSize.Small,
+                2 => WorldSize.Medium,
+                3 => WorldSize.Large,
+                _ => WorldSize.Small
+            };
         }
 
-        else
-        {
-            Console.Clear();
-            Console.WriteLine("I don't understand.");
-        }
-
+        Console.WriteLine("I don't understand. Setting to default.");
+        return WorldSize.Small;
     }
 
-
-    WorldSize GetWorldSize(string menuChoice)
+    private void SetWorldSize(int menuChoice)
     {
         switch (menuChoice)
         {
-            case "0":
-                return WorldSize.Small;
+            case 1:
+                _worldSize = WorldSize.Small;
+                break;
 
-            case "1":
-                return WorldSize.Medium;
+            case 2:
+                _worldSize = WorldSize.Medium;
+                break;
 
-            case "2":
-                return WorldSize.Large;
+            case 3:
+                _worldSize = WorldSize.Large;
+                break;
 
             default:
                 Console.WriteLine("Setting to default map size(4x4)");
-                return WorldSize.Small;
+                _worldSize = WorldSize.Small;
+                break;
         }
-
-    }
-
-    private void SetWorldSize(WorldSize size)
-    {
-        _worldSize = size;
     }
 
 
     public void Render(IRoom room)
     {
         Console.WriteLine();
+
         DisplayRoomName(room);
 
+        // Notify all observers of PlayerEntered event
         _currentRoom.PlayerEntered();
 
     }
@@ -150,6 +151,8 @@ public class GameEngine : IRoomObserver
             var targetPosition = GetTargetPosition(direction);
             if (RoomExistsAtCoordinates(targetPosition.x, targetPosition.y))
                 _player?.Move(direction);
+            else
+                Console.WriteLine("I can't move there.");
         }
 
     }
@@ -169,19 +172,19 @@ public class GameEngine : IRoomObserver
     }
 
 
-    public (int y, int x) GetTargetPosition(Direction direction)
+    public (int x, int y) GetTargetPosition(Direction direction)
     {
         // Get current position 
-        int y = _player.Y;
         int x = _player.X;
+        int y = _player.Y;
 
         // Return coordinates of target position
         return direction switch
         {
-            Direction.North => (++y, x),
-            Direction.South => (--y, x),
-            Direction.East => (y, ++x),
-            Direction.West => (y, --x),
+            Direction.North => (x, ++y),
+            Direction.South => (x, --y),
+            Direction.East => (++x, y),
+            Direction.West => (--x, y),
             _ => throw new ArgumentException("unknown")
         };
     }
@@ -200,22 +203,25 @@ public class GameEngine : IRoomObserver
 
     public void UpdateState()
     {
+
         if (_isRunning)
         {
-            var room = _worldManager.GetRoomAt(_player.Y, _player.X);
+            var room = _worldManager.GetRoomAt(_player.X, _player.Y);
 
             if (room is not null)
+            {
                 _currentRoom = room;
+                Console.WriteLine($"Current room is {_player.X}, {_player.Y}");
+            }
         }
     }
 
     // Managed by RoomObservers
     public void OnPlayerEnter(IRoom room)
     {
-
-        switch (room.GetType().Name)
+        switch (room)
         {
-            case "FountainRoom":
+            case FountainRoom fountainRoom:
                 {
                     if (!_fountainEnabled)
                     {
@@ -229,7 +235,7 @@ public class GameEngine : IRoomObserver
 
                         if (input == "enable fountain")
                         {
-                            EnableFountain((FountainRoom)room);
+                            EnableFountain(fountainRoom);
                             _display.WriteFountainMessage("You've enabled the fountain!");
                             _display.WriteFountainMessage("Now get back to the entrance to escape.");
                         }
@@ -237,7 +243,7 @@ public class GameEngine : IRoomObserver
                 }
                 break;
 
-            case "EntranceRoom":
+            case EntranceRoom entranceRoom:
                 {
                     if (_fountainEnabled)
                     {
@@ -246,6 +252,16 @@ public class GameEngine : IRoomObserver
                         _isRunning = false;
                     }
                 }
+                break;
+
+            case HazardRoom hazardRoom:
+                {
+                    if (_worldManager.IsAdjacentToPit(_player.X, _player.Y))
+                        _display.WriteDescription("You feel a draft. There's a pit in a nearby room..");
+                    if (_worldManager.DoesRoomContainPit(_player.X, _player.Y))
+                        _display.WriteNarrative("You died in the pit. I am sorry.");
+                }
+
                 break;
 
         }

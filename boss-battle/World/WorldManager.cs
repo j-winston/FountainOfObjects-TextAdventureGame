@@ -8,10 +8,14 @@ namespace BossBattle.Core;
 public class WorldManager
 {
     private readonly World _world;
+    private int _worldWidth;
+    private int _worldHeight;
 
     public WorldManager(World world)
     {
         _world = world;
+        _worldWidth = world.Grid.GetLength(0);
+        _worldHeight = world.Grid.GetLength(1);
     }
 
     public IRoom? GetRoomAt(int x, int y)
@@ -29,8 +33,10 @@ public class WorldManager
 
     public bool DoesRoomExist(int x, int y)
     {
-        if (x >= 0 && y >= 0)
-            return (x < _world.Grid.GetLength(0) && y < _world.Grid.GetLength(1));
+
+        if (x < _worldWidth && y < _worldHeight)
+            if (_world.Grid[x, y] is not null)
+                return true;
         return false;
     }
 
@@ -43,13 +49,17 @@ public class WorldManager
 
     public bool IsAdjacentToPit(int x, int y)
     {
-        var rooms = GetAdjacentRooms(x, y);
-
-        foreach (var room in rooms)
+        if (DoesRoomExist(x, y))
         {
-            if (room.HasPit == true)
+            var rooms = GetAdjacentRooms(x, y);
+            foreach (var room in rooms)
+            {
+                if (room.HasPit == true)
+                    Console.WriteLine("has a pit");
                 return true;
+            }
         }
+
 
         return false;
     }
@@ -71,11 +81,12 @@ public class WorldManager
         };
     }
 
-    public List<IRoom> GetAdjacentRooms(int roomX, int roomY)
+    private List<IRoom> GetAdjacentRooms(int roomX, int roomY)
     {
+
         List<IRoom> adjacentRooms = new List<IRoom>();
 
-        if (roomX == 0 & roomY == 0)
+        if (roomX == 0 && roomY == 0)
         {
             // Orthogonal from 0,0
             adjacentRooms.Add(_world.Grid[roomX + 1, roomY]);
@@ -84,9 +95,10 @@ public class WorldManager
             // Diagonal from 0,0 
             adjacentRooms.Add(_world.Grid[roomX, roomY + 1]);
         }
-        else
+
+        // Check for outOfBounds error
+        else if ((roomX > 1 && roomX < _worldWidth - 1) && (roomY > 1 && roomY < _worldHeight - 1))
         {
-            // Orthogonal 
             adjacentRooms.Add(_world.Grid[roomX - 1, roomY]);
             adjacentRooms.Add(_world.Grid[roomX + 1, roomY]);
             adjacentRooms.Add(_world.Grid[roomX, roomY - 1]);
@@ -97,15 +109,10 @@ public class WorldManager
             adjacentRooms.Add(_world.Grid[roomX + 1, roomY + 1]);
             adjacentRooms.Add(_world.Grid[roomX - 1, roomY + 1]);
             adjacentRooms.Add(_world.Grid[roomX + 1, roomY - 1]);
+
         }
 
         return adjacentRooms;
-
-
-
-
-
-
     }
 
 

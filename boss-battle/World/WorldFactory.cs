@@ -15,11 +15,11 @@ public static class WorldFactory
 
         GameDisplay consoleDisplay = new GameDisplay();
 
-        // Add Entrance Room 
-        AddEntranceRoom(grid, gameEngineObserver, consoleDisplay);
-
         // Add Normal and Hazard Rooms 
         AddRooms(grid, gameEngineObserver, consoleDisplay);
+
+        // Add Entrance Room 
+        AddEntranceRoom(grid, gameEngineObserver, consoleDisplay);
 
         // Add Fountain Room 
         AddFountainRoom(grid, gameEngineObserver, consoleDisplay);
@@ -74,12 +74,17 @@ public static class WorldFactory
         {
             for (int y = 0; y < height; y++)
             {
-                // Generate Cavern Rooms 
-                string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
-                grid[x, y] = RoomFactory.CreateRoom(roomType, consoleDisplay);
+                // Skip Entrance Room at (0,0)
+                if (grid[x, y] is not EntranceRoom && grid[x, y] is not FountainRoom)
+                {
+                    // Generate Cavern Rooms 
+                    string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
+                    grid[x, y] = RoomFactory.CreateRoom(roomType, consoleDisplay);
+                }
             }
         }
     }
+
 
     private static void AddFountainRoom(IRoom[,] grid, IRoomObserver observer, GameDisplay consoleDisplay)
     {
@@ -96,17 +101,22 @@ public static class WorldFactory
 
     private static void AddPitRoom(IRoom[,] grid)
     {
-        bool pitPlaced = false;
-        while (!pitPlaced)
+        // Add pits based on map size 
+        var numberOfPits = (_gridDimensions.width / 4 == 1) ? 1 : _gridDimensions.width / 4;
+        for (int i = 0; i < numberOfPits; i++)
         {
             (int x, int y) = GetRandomCoordinate(grid);
-            if (grid[x, y].GetType().Name.ToString() != "FountainRoom")
+
+            if (!(grid[x, y] is FountainRoom))
             {
                 grid[x, y].HasPit = true;
-                pitPlaced = true;
             }
+            else
+                i--;
         }
     }
+
+
 
     private static void CreateFountainRoom(IRoom[,] grid, GameDisplay consoleDisplay)
     {
