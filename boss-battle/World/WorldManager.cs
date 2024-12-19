@@ -18,6 +18,10 @@ public class WorldManager
         _worldHeight = world.Grid.GetLength(1);
     }
 
+    public World GetWorld()
+    {
+        return _world;
+    }
     public IRoom? GetRoomAt(int x, int y)
     {
         if (DoesRoomExist(x, y))

@@ -13,16 +13,14 @@ public static class WorldFactory
 
         var grid = new IRoom[_gridDimensions.width, _gridDimensions.height];
 
-        GameDisplay consoleDisplay = new GameDisplay();
-
         // Add Normal and Hazard Rooms 
-        AddRooms(grid, gameEngineObserver, consoleDisplay);
+        AddRooms(grid, gameEngineObserver);
 
         // Add Entrance Room 
-        AddEntranceRoom(grid, gameEngineObserver, consoleDisplay);
+        AddEntranceRoom(grid, gameEngineObserver);
 
         // Add Fountain Room 
-        AddFountainRoom(grid, gameEngineObserver, consoleDisplay);
+        AddFountainRoom(grid, gameEngineObserver);
 
         // Add a Pit Room 
         AddPitRoom(grid);
@@ -58,14 +56,14 @@ public static class WorldFactory
         }
     }
 
-    private static void AddEntranceRoom(IRoom[,] grid, IRoomObserver observer, GameDisplay consoleDisplay)
+    private static void AddEntranceRoom(IRoom[,] grid, IRoomObserver observer)
     {
-        grid[0, 0] = RoomFactory.CreateRoom("entrance", consoleDisplay);
+        grid[0, 0] = RoomFactory.CreateRoom("entrance");
 
     }
 
     // Generate basic filler rooms 
-    private static void AddRooms(IRoom[,] grid, IRoomObserver observer, GameDisplay consoleDisplay)
+    private static void AddRooms(IRoom[,] grid, IRoomObserver observer)
     {
         int width = grid.GetLength(0);
         int height = grid.GetLength(1);
@@ -79,14 +77,14 @@ public static class WorldFactory
                 {
                     // Generate Cavern Rooms 
                     string roomType = (x + y) % 2 == 0 ? "normal" : "hazard";
-                    grid[x, y] = RoomFactory.CreateRoom(roomType, consoleDisplay);
+                    grid[x, y] = RoomFactory.CreateRoom(roomType);
                 }
             }
         }
     }
 
 
-    private static void AddFountainRoom(IRoom[,] grid, IRoomObserver observer, GameDisplay consoleDisplay)
+    private static void AddFountainRoom(IRoom[,] grid, IRoomObserver observer)
     {
         // Create the Fountain Room in a random location and pass in observer 
         (int fountainX, int fountainY) = GetRandomCoordinate(grid);
@@ -95,7 +93,7 @@ public static class WorldFactory
         if (fountainX == 0 && fountainY == 0)
             (fountainX, fountainY) = GetRandomCoordinate(grid);
 
-        grid[fountainX, fountainY] = RoomFactory.CreateRoom("fountain", consoleDisplay);
+        grid[fountainX, fountainY] = RoomFactory.CreateRoom("fountain");
         grid[fountainX, fountainY].AddObserver(observer);
     }
 
@@ -117,10 +115,9 @@ public static class WorldFactory
     }
 
 
-
-    private static void CreateFountainRoom(IRoom[,] grid, GameDisplay consoleDisplay)
+    private static void CreateFountainRoom(IRoom[,] grid)
     {
-        grid[0, 2] = RoomFactory.CreateRoom("fountain", consoleDisplay);
+        grid[0, 2] = RoomFactory.CreateRoom("fountain");
 
     }
 
@@ -138,9 +135,9 @@ public static class WorldFactory
 
     }
 
-    private static void SetEntranceRoom(IRoom[,] grid, GameDisplay consoleDisplay)
+    private static void SetEntranceRoom(IRoom[,] grid)
     {
-        grid[0, 0] = RoomFactory.CreateRoom("entrance", consoleDisplay);
+        grid[0, 0] = RoomFactory.CreateRoom("entrance");
 
     }
 

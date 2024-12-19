@@ -31,14 +31,14 @@ public class GameEngine : IRoomObserver
     public GameEngine()
     {
         _player = new Player();
-        _display = new GameDisplay();
 
         _worldSize = GetMapSizeChoice();
-
         _world = WorldFactory.GenerateWorld(_worldSize, this);
         _worldManager = new WorldManager(_world);
-
         _currentRoom = _worldManager.GetEntranceRoom();
+
+        _display = new GameDisplay(_worldManager);
+
 
     }
 
@@ -107,6 +107,8 @@ public class GameEngine : IRoomObserver
     public void Render(IRoom room)
     {
         Console.WriteLine();
+
+        _display.DrawMapToScreen();
 
         DisplayRoomName(room);
 
