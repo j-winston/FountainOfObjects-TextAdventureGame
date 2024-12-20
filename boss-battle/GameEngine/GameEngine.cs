@@ -106,28 +106,39 @@ public class GameEngine : IRoomObserver
 
     public void Render(IRoom room)
     {
-        Console.WriteLine();
+        if (_isRunning)
+        {
+            // Clear old screen 
+            Console.Clear();
 
-        _display.DrawMapToScreen();
+            Console.WriteLine();
 
-        DisplayRoomName(room);
+            _display.DrawMapToScreen(_player.X, _player.Y);
 
-        // Notify all observers of PlayerEntered event
-        _currentRoom.PlayerEntered();
+            DisplayRoomName(room);
+
+            // Notify all observers of PlayerEntered event
+            _currentRoom.PlayerEntered();
+        }
 
     }
 
 
     public string GetInput()
     {
-        _display.WriteNarrative("What do you want to do?");
-        _display.ChangeInputColor(MessageTypes.UserCommand);
-        string? input = Console.ReadLine();
+        while (_isRunning)
+        {
+            _display.WriteNarrative("What do you want to do?");
+            _display.ChangeTextColor(MessageTypes.UserCommand);
+            string? input = Console.ReadLine();
 
-        if (input is not null)
-            return input;
+            if (input is not null)
+                return input;
 
-        return String.Empty;
+            return String.Empty;
+
+        }
+        return string.Empty;
 
     }
 
@@ -137,24 +148,27 @@ public class GameEngine : IRoomObserver
         if (input == "q")
         {
             _isRunning = false;
-            return;
         }
 
-        // If can't make sense of input, do nothing 
-        Direction direction = ParseInputForDirection(input);
-        if (direction == Direction.Unknown)
+        if (_isRunning)
         {
-            Console.WriteLine("Unknown direction. Staying put.");
-        }
+            // If can't make sense of input, do nothing 
+            Direction direction = ParseInputForDirection(input);
+            if (direction == Direction.Unknown)
+            {
+                Console.WriteLine("Unknown direction. Staying put.");
+            }
 
-        // Otherwise move to target location if it exists
-        else
-        {
-            var targetPosition = GetTargetPosition(direction);
-            if (RoomExistsAtCoordinates(targetPosition.x, targetPosition.y))
-                _player?.Move(direction);
+            // Otherwise move to target location if it exists
             else
-                Console.WriteLine("I can't move there.");
+            {
+                var targetPosition = GetTargetPosition(direction);
+                if (RoomExistsAtCoordinates(targetPosition.x, targetPosition.y))
+                    _player?.Move(direction);
+                else
+                    Console.WriteLine("I can't move there.");
+            }
+
         }
 
     }
@@ -213,9 +227,10 @@ public class GameEngine : IRoomObserver
             if (room is not null)
             {
                 _currentRoom = room;
-                Console.WriteLine($"Current room is {_player.X}, {_player.Y}");
             }
         }
+
+
     }
 
     // Managed by RoomObservers
@@ -228,7 +243,7 @@ public class GameEngine : IRoomObserver
                     if (!_fountainEnabled)
                     {
                         _display.WriteFountainMessage("Type enable fountain to activate fountain");
-                        _display.ChangeInputColor(MessageTypes.UserCommand);
+                        _display.ChangeTextColor(MessageTypes.UserCommand);
 
                         string? input = Console.ReadLine();
 
@@ -250,8 +265,6 @@ public class GameEngine : IRoomObserver
                     if (_fountainEnabled)
                     {
                         _display.WriteEntranceMessage("The Fountain of Objects has been reactivated, and you have escaped with your life!");
-                        _display.WriteEntranceMessage("Type 'q' to quit or wander around more if you like.");
-                        _isRunning = false;
                     }
                 }
                 break;
@@ -260,8 +273,15 @@ public class GameEngine : IRoomObserver
                 {
                     if (_worldManager.IsAdjacentToPit(_player.X, _player.Y))
                         _display.WriteDescription("You feel a draft. There's a pit in a nearby room..");
-                    if (_worldManager.DoesRoomContainPit(_player.X, _player.Y))
+                    if (_worldManager.DoesRoomContainPit(room))
+                    {
                         _display.WriteNarrative("You died in the pit. I am sorry.");
+
+                        Quit();
+
+                    }
+
+
                 }
 
                 break;
@@ -269,10 +289,16 @@ public class GameEngine : IRoomObserver
         }
     }
 
+    private void Quit()
+    {
+        _isRunning = false;
+    }
+
     private void DisplayRoomName(IRoom room)
     {
         _display.WriteRoomName($"======== {room.Name} ========");
     }
+
     private void EnableFountain(FountainRoom fountainRoom)
     {
         fountainRoom.FountainEnabled = true;

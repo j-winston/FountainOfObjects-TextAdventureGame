@@ -101,14 +101,19 @@ public static class WorldFactory
     {
         // Add pits based on map size 
         var numberOfPits = (_gridDimensions.width / 4 == 1) ? 1 : _gridDimensions.width / 4;
+
+        // Continue looping over each room in the map until 
+        // numberOfPits are placed. 
         for (int i = 0; i < numberOfPits; i++)
         {
             (int x, int y) = GetRandomCoordinate(grid);
 
-            if (!(grid[x, y] is FountainRoom))
+            // Add a pit if it's a hazard room 
+            if ((grid[x, y] is HazardRoom))
             {
                 grid[x, y].HasPit = true;
             }
+            // Otherwise, loop through again 
             else
                 i--;
         }

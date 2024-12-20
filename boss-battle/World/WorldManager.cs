@@ -22,6 +22,7 @@ public class WorldManager
     {
         return _world;
     }
+
     public IRoom? GetRoomAt(int x, int y)
     {
         if (DoesRoomExist(x, y))
@@ -44,11 +45,9 @@ public class WorldManager
         return false;
     }
 
-    public bool DoesRoomContainPit(int x, int y)
+    public bool DoesRoomContainPit(IRoom room)
     {
-        if (DoesRoomExist(x, y))
-            return _world.Grid[x, y].HasPit;
-        return false;
+        return room.HasPit;
     }
 
     public bool IsAdjacentToPit(int x, int y)
@@ -66,6 +65,11 @@ public class WorldManager
 
 
         return false;
+    }
+
+    public bool ContainsFountain(IRoom room)
+    {
+        return room is FountainRoom;
     }
 
     public EntranceRoom GetEntranceRoom()
